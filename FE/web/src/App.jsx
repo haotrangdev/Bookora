@@ -14,6 +14,14 @@ import AdminLayout from './admin/AdminLayout';
 import AdminOrders from './admin/AdminOrders';
 import AdminOrderDetail from './admin/AdminOrderDetail';
 import AdminReports from './admin/AdminReports';
+import { AdminSystemParameter } from './admin/AdminSystemParameter';
+import { AdminCustomers } from './admin/AdminCustomers';
+import AdminStaffs from './admin/AdminStaffs';
+import AdminAuditLogs from './admin/AdminAuditLogs';
+import UserProfile from './pages/UserProfile';
+import AdminBooks from './admin/AdminBooks';
+import Register from './pages/Register';
+import TermsAndPrivacy from './pages/TermsAndPrivacy';
 
 function Private({ children }) {
   const token = useStore((s) => s.token);
@@ -32,18 +40,41 @@ function Header() {
   return (
     <header>
       <div className="bar">
-        <Link to="/" className="logo">📚 Bookora</Link>
+        <Link to="/" className="logo">
+          📚 Bookora
+        </Link>
         <form onSubmit={search}>
           <input name="q" placeholder="Tìm sách, tác giả…" />
-          <button>Tìm</button>
+          <button className="btn">Tìm</button>
         </form>
-        {token && <Link to="/orders">Đơn hàng</Link>}
-        {['STAFF', 'ADMIN'].includes(role) && <Link to="/admin">Quản trị</Link>}
-        <Link to="/cart" className="btn ghost">Giỏ hàng ({cartCount})</Link>
+        {!['STAFF', 'ADMIN'].includes(role) && (
+          <Link to="/orders" className="btn ghost">
+            Đơn hàng
+          </Link>
+        )}
+        {['STAFF', 'ADMIN'].includes(role) && (
+          <Link to="/admin" className="btn ghost">
+            Quản trị
+          </Link>
+        )}
+        {!['STAFF', 'ADMIN'].includes(role) && (
+          <Link to="/cart" className="btn ghost">
+            Giỏ hàng ({cartCount})
+          </Link>
+        )}
+        {token && (
+          <Link to="/profile" className="btn ghost">
+            Tài khoản
+          </Link>
+        )}
         {token ? (
-          <button className="ghost" onClick={() => (setToken(null), nav('/'))}>Đăng xuất</button>
+          <button className="btn ghost" onClick={() => (setToken(null), nav('/'))}>
+            Đăng xuất
+          </button>
         ) : (
-          <Link to="/login" className="btn">Đăng nhập</Link>
+          <Link to="/login" className="btn">
+            Đăng nhập
+          </Link>
         )}
       </div>
     </header>
@@ -59,17 +90,49 @@ export default function App() {
         <Routes>
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminOrders />} />
+            <Route index element={<AdminReports />} />
+            <Route path="books" element={<AdminBooks />} />
+            <Route path="customers" element={<AdminCustomers />} />
+            <Route path="staffs" element={<AdminStaffs />} />
+            <Route path="orders" element={<AdminOrders />} />
             <Route path="orders/:id" element={<AdminOrderDetail />} />
             <Route path="reports" element={<AdminReports />} />
+            <Route path="parameters" element={<AdminSystemParameter />} />
+            <Route path="logs" element={<AdminAuditLogs />} />
           </Route>
           <Route path="/" element={<Home />} />
           <Route path="/book/:id" element={<Book />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/profile" element={<UserProfile />} />
+
           <Route path="/login" element={<Login />} />
-          <Route path="/checkout" element={<Private><Checkout /></Private>} />
-          <Route path="/orders" element={<Private><Orders /></Private>} />
-          <Route path="/orders/:id" element={<Private><Done /></Private>} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/terms-and-privacy" element={<TermsAndPrivacy />} />
+
+          <Route
+            path="/checkout"
+            element={
+              <Private>
+                <Checkout />
+              </Private>
+            }
+          />
+          <Route
+            path="/orders"
+            element={
+              <Private>
+                <Orders />
+              </Private>
+            }
+          />
+          <Route
+            path="/orders/:id"
+            element={
+              <Private>
+                <Done />
+              </Private>
+            }
+          />
           <Route path="/payment/vnpay-return" element={<VnpayReturn />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
